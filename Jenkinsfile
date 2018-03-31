@@ -1,32 +1,17 @@
-pipeline {
-    agent any
-    tools {
-            maven 'Maven 3.5.3'
-            jdk 'JDK 8'
-    }
-    stages {
+node {
 
-        stage ('Initialize') {
-            steps {
-                sh '''
-                echo "PATH = ${PATH}"
-                echo "M2_HOME = ${M2_HOME}"
-                '''
-            }
-        }
+   // Mark the code checkout 'stage'....
+   stage 'Checkout'
 
-        stage('Build') {
-            steps {
-                echo 'Build ...'
-                script {
-                    if (env.BRANCH_NAME == 'master') {
-                       sh 'mvn clean install'
-                    } else {
-                        echo 'Branch != master'
-                    }
-                }
-            }
-        }
+   // Checkout code from repository
+   checkout scm
 
-    }
+   def mvnHome = tool 'Maven 3.5.3'
+
+   // Mark the code build 'stage'....
+   stage 'Build'
+
+   // Run the maven build
+   sh "${mvnHome}/bin/mvn clean install"
+
 }
