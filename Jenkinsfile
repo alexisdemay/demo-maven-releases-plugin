@@ -1,13 +1,32 @@
 pipeline {
     agent any
     tools {
-        maven 'Maven 3.5.3'
+            maven 'Maven 3.5.3'
+            jdk 'JDK 8'
     }
     stages {
-        stage('Build') {
+
+        stage ('Initialize') {
             steps {
-                sh 'mvn clean package'
+                sh '''
+                echo "PATH = ${PATH}"
+                echo "M2_HOME = ${M2_HOME}"
+                '''
             }
         }
+
+        stage('Build') {
+            steps {
+                echo 'Build ...'
+                script {
+                    if (env.BRANCH_NAME == 'master') {
+                       sh 'mvn clean install'
+                    } else {
+                        echo 'Branch != master'
+                    }
+                }
+            }
+        }
+
     }
 }
